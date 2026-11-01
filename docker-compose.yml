@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: smartroom-mosquitto
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./services/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./services/mosquitto/pwfile:/mosquitto/config/pwfile:ro
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    healthcheck:
+      test: ["CMD-SHELL", "mosquitto_pub -h localhost -p 1883 -u smartroom -P smartroom -t smartroom/healthcheck -m ok > /dev/null 2>&1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  mosquitto_data:
+  mosquitto_log:

@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies (services that exist)
+        run: |
+          for d in services/*/; do
+            if [ -f "$d/package.json" ]; then
+              echo "::group::Install $d"
+              (cd "$d" && npm ci)
+              echo "::endgroup::"
+            fi
+          done
+
+      - name: Run tests (services that exist)
+        run: |
+          for d in services/*/; do
+            if [ -f "$d/package.json" ]; then
+              echo "::group::Test $d"
+              (cd "$d" && npm test)
+              echo "::endgroup::"
+            fi
+          done

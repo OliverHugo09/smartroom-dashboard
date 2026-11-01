@@ -1,0 +1,4 @@
+# pwfile de Mosquitto (no versionar con contraseñas reales)
+# Generar en F0 con:
+#   docker run --rm -v ${PWD}/services/mosquitto:/mosquitto/config \
+#     eclipse-mosquitto:2 mosquitto_passwd -c /mosquitto/config/pwfile smartroom

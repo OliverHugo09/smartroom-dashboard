@@ -1,0 +1,28 @@
+# Dependencias
+node_modules/
+
+# Entorno (secretos solo en paneles de Render/Vercel/GitHub; nunca en git)
+.env
+.env.local
+.env.local.*
+.env.cloud
+.env.cloud.*
+.env.*.local
+
+# Node-RED credenciales (no versionar)
+flows_cred.json
+*.cred.json
+
+# Build
+dist/
+build/
+.next/
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
