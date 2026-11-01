@@ -27,6 +27,7 @@ onMounted(async () => {
     await store.fetchHealth();
     isAwake.value = true;
     statusText.value = 'Servicios listos';
+    await store.loadZones();
     store.openWebSocket();
   } catch (e) {
     statusText.value = 'Servicios no disponibles (intenta de nuevo en ~1 min)';

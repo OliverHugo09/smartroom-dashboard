@@ -13,24 +13,28 @@
         @command="sendCommand"
       />
     </div>
-    <p v-if="!zones.length" class="empty">Cargando zonas…</p>
+    <p v-if="store.error" class="empty">{{ store.error }}</p>
+    <p v-else-if="!zones.length" class="empty">Cargando zonas…</p>
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
 import { useZonesStore } from '../stores/zones';
 import ZoneCard from '../components/ZoneCard.vue';
 
 const store = useZonesStore();
-const zones = store.zones;
 
-const onlineCount = zones.reduce((sum, z) => {
+// Reactivo: se actualiza cuando store.zones cambia
+const zones = computed(() => store.zones);
+
+const onlineCount = computed(() => zones.value.reduce((sum, z) => {
   const devs = z.devices_online || {};
   return sum + Object.values(devs).filter(Boolean).length;
-}, 0);
-const totalDevices = zones.length * 4;
-const allOnline = onlineCount === totalDevices && zones.length > 0;
+}, 0));
+
+const totalDevices = computed(() => zones.value.length * 4);
+const allOnline = computed(() => onlineCount.value === totalDevices.value && zones.value.length > 0);
 
 onMounted(() => {
   store.loadZones();
