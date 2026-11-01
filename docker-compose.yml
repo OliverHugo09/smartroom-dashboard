@@ -1,14 +1,13 @@
-version: "3.8"
-
 services:
   mosquitto:
-    image: eclipse-mosquitto:2
+    build:
+      context: ./services/mosquitto
+      dockerfile: Dockerfile
     container_name: smartroom-mosquitto
     ports:
       - "1883:1883"
     volumes:
       - ./services/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
-      - ./services/mosquitto/pwfile:/mosquitto/config/pwfile:ro
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
     healthcheck:
@@ -34,9 +33,7 @@ services:
     restart: unless-stopped
 
   nodered:
-    build:
-      context: ./services/nodered
-      dockerfile: Dockerfile
+    image: nodered/node-red:latest
     container_name: smartroom-nodered
     ports:
       - "1880:1880"
