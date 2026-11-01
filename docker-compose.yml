@@ -18,6 +18,21 @@ services:
       retries: 3
     restart: unless-stopped
 
+  simulator:
+    build:
+      context: ./services/simulator
+      dockerfile: Dockerfile
+    container_name: smartroom-simulator
+    environment:
+      - MQTT_URL=mqtt://mosquitto:1883
+      - MQTT_USER=${MQTT_USER:-smartroom}
+      - MQTT_PASSWORD=${MQTT_PASSWORD:-smartroom}
+      - SIMULATOR_ENABLED=true
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   mosquitto_data:
   mosquitto_log:

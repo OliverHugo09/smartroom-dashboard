@@ -1,0 +1,16 @@
+{
+  "name": "@smartroom/simulator",
+  "version": "0.1.0",
+  "description": "Simulador de dispositivos IoT para SmartRoom (iluminación, clima, cortinas, presencia) sobre MQTT",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node test/index.js"
+  },
+  "dependencies": {
+    "mqtt": "^5.x"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
