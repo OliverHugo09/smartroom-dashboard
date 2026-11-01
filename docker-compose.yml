@@ -33,6 +33,31 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  nodered:
+    build:
+      context: ./services/nodered
+      dockerfile: Dockerfile
+    container_name: smartroom-nodered
+    ports:
+      - "1880:1880"
+    environment:
+      - PORT=1880
+      - MQTT_URL=mqtt://mosquitto:1883
+      - MQTT_USER=${MQTT_USER:-smartroom}
+      - MQTT_PASSWORD=${MQTT_PASSWORD:-smartroom}
+      - PROPERTY_ID=demo-hotel
+      - SIMULATOR_ENABLED=false
+      - NODERED_EDITOR_ENABLED=false
+      - NODERED_CREDENTIAL_SECRET=${NODERED_CREDENTIAL_SECRET:-cambiar_en_produccion}
+      - DEMO_KEY=${DEMO_KEY:-demo-local-key}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:5173}
+      - VACANT_MINUTES=2
+      - RATE_LIMIT_PER_MIN=60
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   mosquitto_data:
   mosquitto_log:

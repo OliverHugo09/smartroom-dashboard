@@ -1,0 +1,16 @@
+{
+  "name": "@smartroom/nodered",
+  "version": "0.1.0",
+  "description": "Node-RED: agregación MQTT, validación de comandos, reglas, API REST y WebSocket para SmartRoom",
+  "main": "start.js",
+  "scripts": {
+    "start": "node start.js",
+    "test": "node test/index.js"
+  },
+  "dependencies": {
+    "node-red": "3.x"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
