@@ -33,7 +33,9 @@ services:
     restart: unless-stopped
 
   nodered:
-    image: nodered/node-red:latest
+    build:
+      context: ./services/nodered
+      dockerfile: Dockerfile
     container_name: smartroom-nodered
     ports:
       - "1880:1880"

@@ -8,8 +8,8 @@
     "test": "node test/index.js"
   },
   "dependencies": {
-    "node-red": "3.x",
-    "dotenv": "^16.x"
+    "dotenv": "^16.x",
+    "mqtt": "^5.x"
   },
   "engines": {
     "node": ">=20"

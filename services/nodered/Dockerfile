@@ -1,15 +1,13 @@
 # Node-RED + simulador (F2 / F4)
-# En Render: un solo contenedor con dos procesos (Node-RED + simulador).
-FROM nodered/node-red:3
+# Servidor HTTP simple de la API en lugar de flujos de Node-RED.
+FROM node:24-alpine
 
-USER root
-RUN npm install --omit=dev --no-audit --no-fund
+WORKDIR /app
 
-USER node-red
+COPY package.json package-lock.json ./
+RUN npm install --omit=dev
 
-WORKDIR /data
-
-COPY --chown=node-red:node-red . /data/
+COPY . .
 
 ENV NODE_ENV=production
 
