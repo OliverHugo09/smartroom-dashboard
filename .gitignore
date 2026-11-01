@@ -9,9 +9,10 @@ node_modules/
 .env.cloud.*
 .env.*.local
 
-# Node-RED credenciales (no versionar)
+# Node-RED / Mosquitto credenciales (no versionar)
 flows_cred.json
 *.cred.json
+services/mosquitto/pwfile
 
 # Build
 dist/
