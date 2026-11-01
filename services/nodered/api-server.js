@@ -3,6 +3,7 @@
 // de Node-RED (más confiable y fácil de depurar en modo headless).
 const http = require('http');
 const url = require('url');
+const { WebSocketServer } = require('ws');
 const mqtt = require('mqtt');
 
 const PORT = process.env.PORT || 1880;
@@ -145,6 +146,9 @@ function connectMqtt() {
         }
         z.last_cmd_id = state.last_cmd_id || null;
         z.updated_at = state.ts || new Date().toISOString();
+
+        // Broadcast WebSocket de zona actualizada.
+        broadcastWs({ type: 'zone_update', zone: z });
 
         // Reglas de automatización R1 y R2.
         handleVacancyRules(zoneId, state.occupancy_status);
@@ -363,12 +367,63 @@ const server = http.createServer(async (req, res) => {
 
 connectMqtt();
 
+// Servidor WebSocket para tiempo real (zone_update, event, hello).
+const wss = new WebSocketServer({ server, path: '/api/ws/zones' });
+const wsClients = new Set();
+
+function broadcastWs(data) {
+  const msg = JSON.stringify(data);
+  wsClients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(msg);
+    }
+  });
+}
+
+wss.on('connection', (ws) => {
+  console.log('[api-server] cliente WebSocket conectado');
+  wsClients.add(ws);
+
+  // Enviar hello inmediato.
+  ws.send(JSON.stringify({ type: 'hello', server_time: new Date().toISOString() }));
+
+  ws.on('message', (raw) => {
+    try {
+      const msg = JSON.parse(raw.toString());
+      if (msg.type === 'ping') {
+        ws.send(JSON.stringify({ type: 'hello', server_time: new Date().toISOString() }));
+      }
+    } catch (e) {
+      // ignorar mensajes malformados
+    }
+  });
+
+  ws.on('close', () => {
+    wsClients.delete(ws);
+    console.log('[api-server] cliente WebSocket desconectado');
+  });
+
+  ws.on('error', (err) => {
+    console.error('[api-server] error WebSocket:', err.message);
+    wsClients.delete(ws);
+  });
+});
+
+// Sobrescribir emitEvent para también hacer broadcast WebSocket.
+const _emitEvent = emitEvent;
+emitEvent = function (zoneId, type, message, data = {}) {
+  _emitEvent.call(this, zoneId, type, message, data);
+  broadcastWs({ type: 'event', event: events[0] });
+};
+
 server.listen(PORT, () => {
   console.log(`[api-server] escuchando en puerto ${PORT}`);
+  console.log(`[api-server] WebSocket en ws://localhost:${PORT}/api/ws/zones`);
 });
 
 process.on('SIGINT', () => {
   console.log('[api-server] apagando...');
+  wsClients.forEach((ws) => ws.close());
   if (mqttClient) mqttClient.end();
   server.close();
   process.exit(0);
