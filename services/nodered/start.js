@@ -13,11 +13,12 @@ const SIMULATOR_DIR = path.join(__dirname, '..', 'simulator');
 
 const settings = require('./settings');
 
-// Inicializar Node-RED.
-RED.init(settings.server || {}, settings);
-
 // Servidor HTTP de Node-RED (expone /api y /ui si editor habilitado).
 const server = require('http').createServer();
+
+// Inicializar Node-RED con el servidor HTTP.
+RED.init(server, settings);
+
 RED.start();
 RED.api(server, settings);
 
