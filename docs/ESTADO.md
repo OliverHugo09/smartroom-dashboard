@@ -1,6 +1,6 @@
 # Estado del proyecto (documento vivo — el agente lo actualiza)
 
-Última actualización: 2026-11-02 — F0–F3 implementados, F3 UI rediseñada con Tailwind CSS v4 + GSAP.
+Última actualización: 2026-11-02 — F0–F3 implementados, F3 UI dark mode completada con Tailwind CSS v4 + GSAP.
 Fase en curso: F3 (verificación local pendiente; F4 en espera por decisión del usuario).
 
 ## Avance
@@ -9,7 +9,7 @@ Fase en curso: F3 (verificación local pendiente; F4 en espera por decisión del
 | F0 | Setup y Compose local | hecho | #1 | Repo creado, `docker-compose.yml` con Mosquitto, `.env.*.example`, `.gitignore`, `.gitattributes`, CI workflow. Mosquitto verificado en Docker: levanta, auth funciona, anónimo rechazado. |
 | F1 | Simulador de dispositivos | hecho (código) | #2 | `services/simulator/`: cliente MQTT único, estado retained, LWT, comandos, transiciones, Dockerfile. 25 pruebas unitarias pasan. |
 | F2 | Node-RED (agregación, comandos, reglas, REST, WebSocket) | hecho (código) | #3 | `services/nodered/`: api-server.js (servidor HTTP simple), start.js, Dockerfile. Endpoints /api/health, /api/zones, /api/zones/:id/commands, /api/events, WS /api/ws/zones. Reglas R1/R2 integradas. |
-| F3 | Dashboard Vue 3 | hecho (código) | #4 | `services/web/`: Vue 3 + Vite + Router + Pinia + Axios + Tailwind CSS v4 + GSAP. Panel de control mobile-first con resumen de estado, grid responsivo (1/2/3 col), tarjetas con animaciones (luz, temperatura, cortinas, ocupación), escenas rápidas, vista de detalle con sliders y preview, temperaturas redondeadas a 1 decimal, colores térmicos (azul frío / naranja óptimo / rojo caliente). WebSocket tiempo real. |
+| F3 | Dashboard Vue 3 | hecho (código) | #4 | `services/web/`: Vue 3 + Vite + Router + Pinia + Axios + Tailwind CSS v4 + GSAP + Lucide icons. Panel de control dark mode (slate-950) mobile-first con resumen de estado, grid responsivo (1/2/3 col), tarjetas con animaciones GSAP (luz, temperatura, cortinas, ocupación), escenas rápidas, vista de detalle con sliders y preview, temperaturas redondeadas a 1 decimal, colores térmicos (azul frío <21°C / naranja óptimo 21-27°C / rojo caliente >27°C), WebSocket tiempo real. |
 | F4 | Despliegue (HiveMQ, Render, Vercel) | pendiente | | En espera: verificar todo en local primero. |
 | F5 | README, video y checklist | pendiente | | |
 Estados: pendiente · en curso · bloqueado · hecho.
