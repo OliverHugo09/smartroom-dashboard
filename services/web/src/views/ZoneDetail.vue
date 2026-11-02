@@ -278,7 +278,6 @@ const tempTextColor = computed(() => {
 });
 
 const recentEvents = computed(() => {
-  // Los eventos son globales, mostramos los últimos del store
   return [];
 });
 
@@ -346,12 +345,5 @@ const onCurtainsInput = (e) => {
 }
 .curtain-preview {
   transition: all 0.8s ease;
-}
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }
 </style>
