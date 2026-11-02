@@ -34,9 +34,9 @@
           <span class="text-xs font-semibold text-slate-500">Iluminación</span>
           <span class="text-xs font-bold text-slate-700">{{ zone.dimmer_level }}%</span>
         </div>
-        <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden relative group/light">
+        <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
           <div
-            class="h-full bg-amber-400 rounded-full transition-all duration-700 ease-out group-hover/light:scale-x-105"
+            class="h-full bg-amber-400 rounded-full transition-all duration-700 ease-out"
             :style="{ width: dimmerLevel + '%', boxShadow: dimmerLevel > 0 ? '0 0 12px rgba(251, 191, 36, 0.5)' : 'none' }"
           ></div>
         </div>
@@ -51,9 +51,9 @@
           <span class="text-xs font-semibold text-slate-500">Temperatura</span>
           <span class="text-xs font-bold" :class="tempTextColor">{{ roundTemp(zone.thermostat_temp) }}°C</span>
         </div>
-        <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden relative group/temp">
+        <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
           <div
-            class="h-full rounded-full transition-all duration-700 ease-out group-hover/temp:scale-x-105"
+            class="h-full rounded-full transition-all duration-700 ease-out"
             :style="{
               width: tempFill + '%',
               background: tempColor,
@@ -72,15 +72,15 @@
           <span class="text-xs font-semibold text-slate-500">Cortinas</span>
           <span class="text-xs font-bold text-slate-700">{{ zone.curtains_position }}%</span>
         </div>
-        <div class="curtain-track h-10 w-full bg-slate-200 rounded-lg overflow-hidden relative border border-slate-100 group/curtain">
+        <div class="curtain-track h-10 w-full bg-slate-200 rounded-lg overflow-hidden relative border border-slate-100">
           <!-- Cortina izquierda (desde izquierda) -->
           <div
-            class="curtain-panel absolute top-0 bottom-0 left-0 bg-slate-300/70 transition-all duration-1000 ease-out group-hover/curtain:scale-y-95"
+            class="curtain-panel absolute top-0 bottom-0 left-0 bg-slate-300/70 transition-all duration-1000 ease-out"
             :style="{ width: curtainLeftWidth + '%', boxShadow: 'inset -2px 0 6px rgba(0,0,0,0.25)' }"
           ></div>
           <!-- Cortina derecha (desde derecha) -->
           <div
-            class="curtain-panel absolute top-0 bottom-0 right-0 bg-slate-300/70 transition-all duration-1000 ease-out group-hover/curtain:scale-y-95"
+            class="curtain-panel absolute top-0 bottom-0 right-0 bg-slate-300/70 transition-all duration-1000 ease-out"
             :style="{ width: curtainRightWidth + '%', boxShadow: 'inset 2px 0 6px rgba(0,0,0,0.25)' }"
           ></div>
           <!-- Indicador de luz filtrada -->
