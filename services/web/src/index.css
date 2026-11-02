@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 @layer base {
   body {
@@ -20,5 +18,11 @@
   }
   .metric-card {
     @apply rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm transition-all duration-300;
+  }
+  .btn-refresh {
+    @apply inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 active:scale-95;
+  }
+  .btn-refresh svg {
+    @apply text-slate-400;
   }
 }

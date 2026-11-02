@@ -145,10 +145,5 @@ const sendCommand = async (zoneId, type, value) => {
 </script>
 
 <style scoped>
-.btn-refresh {
-  @apply inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 active:scale-95;
-}
-.btn-refresh svg {
-  @apply text-slate-400;
-}
+/* Estilos de btn-refresh definidos en src/index.css (@layer components) */
 </style>
