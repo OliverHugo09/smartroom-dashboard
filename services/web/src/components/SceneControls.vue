@@ -7,7 +7,7 @@
       <button
         v-for="s in scenes"
         :key="s"
-        @click="applyScene(s)"
+        @click="applyScene(s, $event)"
         @mouseenter="onHover(s)"
         class="btn-scene flex flex-col items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-50 hover:border-smartroom-500 hover:text-smartroom-600 active:scale-95 min-w-[70px]"
         :class="{ 'active': activeScene === s }"
@@ -52,14 +52,15 @@ const activeScene = computed(() => {
 
 const iconFor = (s) => icons[s] || '•';
 
-const applyScene = async (s) => {
+const applyScene = async (s, evt) => {
   await store.sendCommand(props.zoneId, 'set_scene', s);
-  gsap.fromTo(event.currentTarget, { scale: 1 }, { scale: 0.95, yoyo: true, repeat: 1, duration: 0.15 });
+  gsap.fromTo(evt.currentTarget, { scale: 1 }, { scale: 0.95, yoyo: true, repeat: 1, duration: 0.15 });
 };
 
 const onHover = (s) => {
   if (activeScene.value === s) return;
-  gsap.to(`.scene-controls button:nth-child(${scenes.indexOf(s) + 1})`, {
+  const idx = scenes.indexOf(s) + 1;
+  gsap.to('.scene-controls button:nth-child(' + idx + ')', {
     duration: 0.2,
     y: -4,
     ease: 'power2.out',
