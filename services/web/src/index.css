@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+}
+
+@layer components {
+  .btn-scene {
+    @apply inline-flex flex-col items-center gap-2 px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-50 hover:border-smartroom-500 hover:text-smartroom-600 active:scale-95;
+  }
+  .btn-scene.active {
+    @apply bg-smartroom-100 border-smartroom-500 text-smartroom-700 shadow-sm shadow-smartroom-500/30;
+  }
+  .card-panel {
+    @apply relative rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:border-slate-300;
+  }
+  .metric-card {
+    @apply rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm transition-all duration-300;
+  }

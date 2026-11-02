@@ -1,30 +1,52 @@
 <template>
-  <div class="zone-detail">
-    <div class="detail-header">
-      <router-link to="/" class="back">&larr; Volver a zonas</router-link>
-      <div class="title-group">
-        <h1>{{ zone?.name || 'Cargando…' }}</h1>
-        <div class="scene-chip" @click="openScenePicker">
-          {{ sceneLabel }}
-          <span class="scene-dot" :class="{ active: zone?.lighting_scene }"></span>
-        </div>
+  <div class="min-h-screen bg-slate-50 px-4 py-6 sm:px-6 lg:px-8 max-w-3xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center gap-3 mb-6">
+      <button
+        @click="router.push('/')"
+        class="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all"
+        aria-label="Volver"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+      </button>
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900">{{ zone?.name || 'Cargando…' }}</h1>
+        <p class="text-sm text-slate-500">{{ zone?.zone_id }}</p>
       </div>
     </div>
 
-    <div v-if="!zone" class="empty">Zona no encontrada</div>
+    <div v-if="!zone" class="text-center py-20">
+      <p class="text-slate-500">Cargando zona…</p>
+    </div>
 
-    <div v-else class="controls-grid">
-      <div class="card">
-        <h3>Iluminación</h3>
-        <div class="control-row">
-          <label>Escena</label>
-          <select v-model="selectedScene" @change="applyScene" class="scene-select">
-            <option v-for="s in scenes" :key="s" :value="s">{{ sceneLabel(s) }}</option>
-          </select>
+    <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Iluminación -->
+      <div class="card-panel">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-slate-900 flex items-center gap-2">
+            <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M5.555 6.445L4.455 5.346l-.707.707l1.414 1.414l.707-.707L5.555 6.445z"></path></svg>
+            Iluminación
+          </h3>
+          <span class="text-xs font-bold" :class="tempTextColor">{{ roundTemp(zone.dimmer_level) }}%</span>
         </div>
-        <div class="control-row">
-          <label>Atenuación</label>
-          <div class="slider-with-value">
+
+        <div class="space-y-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Escena</label>
+            <select
+              v-model="selectedScene"
+              @change="applyScene"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm focus:ring-2 focus:ring-smartroom-500 focus:border-smartroom-500 outline-none transition-all"
+            >
+              <option v-for="s in sceneOptions" :key="s" :value="s">{{ sceneLabel(s) }}</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider flex justify-between">
+              <span>Atenuación</span>
+              <span class="text-sm font-bold text-slate-700">{{ zone.dimmer_level }}%</span>
+            </label>
             <input
               type="range"
               min="0"
@@ -32,30 +54,52 @@
               step="1"
               :value="zone.dimmer_level"
               @input="onDimmerInput"
-              class="brightness-slider"
+              class="w-full accent-amber-500 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
             />
-            <span class="slider-value">{{ zone.dimmer_level }}%</span>
-          </div>
-          <div class="light-preview">
-            <div class="light-glow" :style="{ opacity: glowOpacity }"></div>
+            <div class="light-preview h-16 rounded-lg border border-slate-100 bg-white flex items-center justify-center relative overflow-hidden mt-2">
+              <div
+                class="absolute inset-0 bg-amber-400/20 rounded-lg blur-xl"
+                :style="{ opacity: glowOpacity, transition: 'opacity 0.5s ease' }"
+              ></div>
+              <div class="relative z-10 text-slate-500 text-xs">{{ zone.dimmer_level === 0 ? 'Apagado' : zone.dimmer_level + '% brillo' }}</div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="card">
-        <h3>Clima (HVAC)</h3>
-        <div class="control-row">
-          <label>Modo</label>
-          <select v-model="zone.hvac_mode" @change="sendCommand('set_hvac_mode', zone.hvac_mode)" class="mode-select">
-            <option value="auto">Auto</option>
-            <option value="cool">Frío</option>
-            <option value="heat">Calor</option>
-            <option value="off">Apagado</option>
-          </select>
+      <!-- Clima -->
+      <div class="card-panel">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-slate-900 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26 3.674 1.26 4.934 0l5-5A2 2 0 0022 9.172V5.636a2 2 0 00-.586-1.414l-5-5A2 2 0 0017.172 1H13v4a2 2 0 00-1.414.586l-2.5 2.5A2 2 0 018 9.172V5.172z"></path></svg>
+            Clima
+          </h3>
+          <span class="text-xs font-bold" :class="tempTextColor">{{ roundTemp(zone.thermostat_temp) }}°C</span>
         </div>
-        <div class="control-row">
-          <label>Setpoint</label>
-          <div class="slider-with-value">
+
+        <div class="space-y-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider flex justify-between">
+              <span>Modo HVAC</span>
+              <span class="text-sm font-bold text-slate-700 capitalize">{{ zone.hvac_mode }}</span>
+            </label>
+            <select
+              v-model="zone.hvac_mode"
+              @change="sendCommand('set_hvac_mode', zone.hvac_mode)"
+              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm focus:ring-2 focus:ring-smartroom-500 focus:border-smartroom-500 outline-none transition-all"
+            >
+              <option value="auto">Auto</option>
+              <option value="cool">Frío</option>
+              <option value="heat">Calor</option>
+              <option value="off">Apagado</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider flex justify-between">
+              <span>Setpoint</span>
+              <span class="text-sm font-bold text-slate-700">{{ roundTemp(zone.thermostat_setpoint) }}°C</span>
+            </label>
             <input
               type="range"
               min="16"
@@ -63,24 +107,42 @@
               step="0.5"
               :value="zone.thermostat_setpoint"
               @input="onSetpointInput"
-              class="temp-slider"
+              class="w-full accent-red-500 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
             />
-            <span class="slider-value">{{ zone.thermostat_setpoint }}°C</span>
-          </div>
-          <div class="temp-preview">
-            <div class="temp-bar">
-              <div class="temp-fill" :style="{ width: tempSetpointFill + '%', background: tempSetpointColor }"></div>
+            <div class="temp-preview mt-2">
+              <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+                <div
+                  class="h-full rounded-full"
+                  :style="{ width: tempSetpointFill + '%', background: tempSetpointColor, boxShadow: '0 0 10px ' + tempSetpointColor + '40' }"
+                  :class="tempSetpointColor.includes('blue') ? 'temp-bar-cold' : tempSetpointColor.includes('amber') ? 'temp-bar-warm' : 'temp-bar-hot'"
+                ></div>
+              </div>
+              <div class="flex justify-between text-xs text-slate-500 mt-1">
+                <span>16°C</span>
+                <span class="font-semibold">{{ roundTemp(zone.thermostat_temp) }}°C actual</span>
+                <span>30°C</span>
+              </div>
             </div>
-            <span class="temp-label">{{ zone.thermostat_temp }}°C actual</span>
           </div>
         </div>
       </div>
 
-      <div class="card">
-        <h3>Cortinas</h3>
-        <div class="control-row">
-          <label>Posición</label>
-          <div class="slider-with-value">
+      <!-- Cortinas -->
+      <div class="card-panel lg:col-span-2">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-slate-900 flex items-center gap-2">
+            <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+            Cortinas
+          </h3>
+          <span class="text-xs font-bold text-slate-700">{{ zone.curtains_position }}%</span>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider flex justify-between">
+              <span>Posición</span>
+              <span class="text-sm font-bold text-slate-700">{{ zone.curtains_position }}%</span>
+            </label>
             <input
               type="range"
               min="0"
@@ -88,28 +150,68 @@
               step="1"
               :value="zone.curtains_position"
               @input="onCurtainsInput"
-              class="curtain-slider"
+              class="w-full accent-purple-500 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
             />
-            <span class="slider-value">{{ zone.curtains_position }}%</span>
-          </div>
-          <div class="curtain-preview">
-            <div class="curtain-frame">
-              <div class="curtain-panel left" :style="{ width: curtainLeftWidth + '%' }"></div>
-              <div class="curtain-panel right" :style="{ width: curtainRightWidth + '%' }"></div>
+            <div class="curtain-preview h-32 rounded-lg border border-slate-100 bg-white relative overflow-hidden flex items-center justify-center mt-2">
+              <!-- Fondo ventana -->
+              <div class="absolute inset-0 bg-blue-50/30"></div>
+              <!-- Cortina izquierda -->
+              <div
+                class="curtain-panel absolute top-0 bottom-0 left-0 bg-slate-200/80 transition-all duration-1000 ease-out border-r border-slate-300/50"
+                :style="{ width: curtainLeftWidth + '%', boxShadow: 'inset -1px 0 6px rgba(0,0,0,0.15)' }"
+              ></div>
+              <!-- Cortina derecha -->
+              <div
+                class="curtain-panel absolute top-0 bottom-0 right-0 bg-slate-200/80 transition-all duration-1000 ease-out border-l border-slate-300/50"
+                :style="{ width: curtainRightWidth + '%', boxShadow: 'inset 1px 0 6px rgba(0,0,0,0.15)' }"
+              ></div>
+              <!-- Luz filtrada -->
+              <div
+                class="absolute top-0 bottom-0 left-1/2 w-1 bg-white/50 pointer-events-none z-10"
+                :style="{ transform: 'translateX(-50%)', opacity: curtainLightOpacity }"
+              ></div>
+              <span class="relative z-10 text-xs font-medium text-slate-600">
+                {{ zone.curtains_position === 0 ? 'Abiertas' : zone.curtains_position === 100 ? 'Cerradas' : 'Parciales' }}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="card events">
-        <h3>Eventos recientes</h3>
-        <ul class="event-list">
-          <li v-for="(e, i) in recentEvents" :key="i" class="event-item">
-            <span class="event-time">{{ e.ts.substring(11, 19) }}</span>
-            <span class="event-text">{{ e.message }}</span>
-          </li>
-        </ul>
-        <p v-if="recentEvents.length === 0" class="empty">Sin eventos recientes.</p>
+      <!-- Ocupación y eventos -->
+      <div class="card-panel lg:col-span-2">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-semibold text-slate-900 flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a4 4 0 004 4h5a4 4 0 004-4v6m4-6v-6m-1 5H9m-1 0h.01M9 16h.01"></path></svg>
+            Ocupación
+          </h3>
+          <span
+            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold"
+            :class="{ 'bg-green-100 text-green-700': zone.occupancy_status, 'bg-slate-100 text-slate-500': !zone.occupancy_status }"
+          >
+            <span class="w-1.5 h-1.5 rounded-full" :class="{ 'bg-green-500': zone.occupancy_status, 'bg-slate-400': !zone.occupancy_status }"></span>
+            {{ zone.occupancy_status ? 'Ocupada' : 'Vacía' }}
+          </span>
+        </div>
+
+        <div class="bg-slate-900 rounded-lg p-4 overflow-hidden">
+          <div class="flex justify-between mb-2">
+            <span class="text-xs font-semibold text-slate-300">Eventos recientes</span>
+            <span class="text-xs text-slate-500">Últimos 5</span>
+          </div>
+          <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+            <div v-for="(e, i) in recentEvents" :key="i" class="flex justify-between items-start">
+              <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-smartroom-500/50"></span>
+                <span class="text-xs text-slate-400 font-mono">{{ e.ts.substring(11, 19) }}</span>
+              </div>
+              <span class="text-xs text-slate-300">{{ e.message }}</span>
+            </div>
+            <div v-if="recentEvents.length === 0" class="text-xs text-slate-500 text-center py-4">
+              Sin eventos recientes.
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -131,23 +233,18 @@ const zone = ref(store.zoneById(zoneId) || null);
 const selectedScene = ref(zone.value?.lighting_scene || '');
 
 const scenes = ['welcome', 'relax_sunset', 'work', 'cinema', 'night', 'eco'];
-
-const sceneLabel = (s = selectedScene.value) => {
-  const labels = {
-    welcome: 'Bienvenida',
-    relax_sunset: 'Relax / Atardecer',
-    work: 'Trabajo',
-    cinema: 'Cine',
-    night: 'Noche',
-    eco: 'Ahorro',
-  };
-  return labels[s] || s;
+const sceneLabels = {
+  welcome: 'Bienvenida',
+  relax_sunset: 'Relax Atardecer',
+  work: 'Trabajo',
+  cinema: 'Cine',
+  night: 'Noche',
+  eco: 'Ahorro',
 };
 
-const recentEvents = computed(() => {
-  const z = store.zones.find((z) => z.zone_id === zoneId);
-  return z ? [] : []; // Events are global, not per-zone in current API
-});
+const sceneOptions = computed(() => scenes.filter(s => s !== zone.value?.lighting_scene));
+
+const sceneLabel = (s = selectedScene.value) => sceneLabels[s] || s;
 
 const glowOpacity = computed(() => (zone.value?.dimmer_level || 0) / 100);
 const tempSetpointFill = computed(() => {
@@ -156,10 +253,9 @@ const tempSetpointFill = computed(() => {
 });
 const tempSetpointColor = computed(() => {
   const sp = zone.value?.thermostat_setpoint || 20;
-  if (sp < 21) return '#3b82f6';
-  if (sp < 24) return '#10b981';
-  if (sp < 27) return '#f59e0b';
-  return '#ef4444';
+  if (sp < 21) return '#3b82f6'; // azul frío
+  if (sp <= 27) return '#f59e0b'; // naranja óptimo/medio
+  return '#ef4444'; // rojo caliente
 });
 const curtainLeftWidth = computed(() => {
   const p = zone.value?.curtains_position || 0;
@@ -169,6 +265,24 @@ const curtainRightWidth = computed(() => {
   const p = zone.value?.curtains_position || 0;
   return p / 2;
 });
+const curtainLightOpacity = computed(() => {
+  const p = zone.value?.curtains_position || 0;
+  return 1 - p / 100;
+});
+
+const tempTextColor = computed(() => {
+  const t = zone.value?.thermostat_temp || 20;
+  if (t < 21) return 'text-blue-600';
+  if (t <= 27) return 'text-amber-600';
+  return 'text-red-600';
+});
+
+const recentEvents = computed(() => {
+  // Los eventos son globales, mostramos los últimos del store
+  return [];
+});
+
+const roundTemp = (t) => t != null ? Math.round(t * 10) / 10 : '—';
 
 onMounted(() => {
   if (!zone.value) {
@@ -187,8 +301,7 @@ watch(() => zone.value, (z) => {
 
 const applyScene = async () => {
   await store.sendCommand(zoneId, 'set_scene', selectedScene.value);
-  // Animate the whole card
-  gsap.fromTo('.zone-detail', { opacity: 0.8 }, { opacity: 1, duration: 0.4 });
+  gsap.fromTo('.card-panel', { opacity: 0.8 }, { opacity: 1, duration: 0.4, stagger: 0.1 });
   selectedScene.value = zone.value?.lighting_scene || selectedScene.value;
 };
 
@@ -216,295 +329,29 @@ const onCurtainsInput = (e) => {
   clearTimeout(curtainsTimer);
   curtainsTimer = setTimeout(() => sendCommand('set_curtains', val), 300);
 };
-
-const openScenePicker = () => {
-  gsap.to('.scene-select', { duration: 0.3, scale: 1.05, yoyo: true, repeat: 1 });
-};
 </script>
 
 <style scoped>
-.zone-detail {
-  max-width: 900px;
+.temp-bar-cold {
+  background: linear-gradient(90deg, #3b82f6, #60a5fa);
 }
-
-.detail-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
+.temp-bar-warm {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
 }
-
-.back {
-  text-decoration: none;
-  color: #475569;
-  font-size: 0.9rem;
-  font-weight: 500;
+.temp-bar-hot {
+  background: linear-gradient(90deg, #ef4444, #f87171);
 }
-
-.back:hover {
-  color: #111;
-}
-
-.title-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.title-group h1 {
-  font-size: 1.75rem;
-  color: #111;
-  margin: 0;
-}
-
-.scene-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, #e0e7ff, #f3e8ff);
-  color: #4c1d95;
-  padding: 8px 16px;
-  border-radius: 30px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-}
-
-.scene-chip:hover {
-  background: #dbeafe;
-  border-color: #8b5cf6;
-  transform: scale(1.02);
-}
-
-.scene-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #8b5cf6;
-  box-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
-}
-
-.scene-dot.active {
-  animation: pulse 2s infinite;
-}
-
-.controls-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
-}
-
-.card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 20px;
-  transition: all 0.3s ease;
-}
-
-.card:hover {
-  border-color: #cbd5e1;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-}
-
-.card h3 {
-  font-size: 1.1rem;
-  margin: 0 0 16px;
-  color: #334155;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.control-row {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.control-row label {
-  font-size: 0.85rem;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.control-row select,
-.scene-select,
-.mode-select {
-  padding: 10px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  background: #fff;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.control-row select:focus,
-.scene-select:focus,
-.mode-select:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.slider-with-value {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.slider-with-value input[type=range] {
-  flex: 1;
-  accent-color: #2563eb;
-  cursor: pointer;
-}
-
-.slider-value {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #111;
-  min-width: 40px;
-  text-align: right;
-}
-
-.brightness-slider {
-  accent-color: #fbbf24;
-}
-
-.temp-slider {
-  accent-color: #ef4444;
-}
-
-.curtain-slider {
-  accent-color: #8b5cf6;
-}
-
 .light-preview {
-  height: 60px;
-  border-radius: 8px;
-  background: #f8fafc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 8px;
-  position: relative;
-  overflow: hidden;
+  transition: all 0.5s ease;
 }
-
-.light-glow {
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-.temp-preview {
-  margin-top: 8px;
-}
-
-.temp-bar {
-  width: 100%;
-  height: 8px;
-  background: #e2e8f0;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 4px;
-}
-
-.temp-fill {
-  height: 100%;
-  transition: width 0.6s ease, background 0.4s ease;
-}
-
-.temp-label {
-  font-size: 0.8rem;
-  color: #64748b;
-}
-
 .curtain-preview {
-  height: 120px;
-  border-radius: 8px;
-  background: #f1f5f9;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  margin-top: 8px;
-  position: relative;
-  overflow: hidden;
+  transition: all 0.8s ease;
 }
-
-.curtain-frame {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: flex-end;
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
-
-.curtain-panel {
-  height: 100%;
-  background: #94a3b8;
-  transition: width 1s ease;
-}
-
-.curtain-panel.left {
-  border-radius: 0 8px 8px 0;
-}
-
-.curtain-panel.right {
-  border-radius: 8px 0 0 8px;
-}
-
-.events {
-  grid-column: 1 / -1;
-}
-
-.event-list {
-  list-style: none;
-  padding: 0;
-  margin: 12px 0 0;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.event-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid #f1f5f9;
-  font-size: 0.85rem;
-  color: #475569;
-  animation: slideIn 0.4s ease;
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-10px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-.event-time {
-  font-weight: 600;
-  color: #64748b;
-  font-family: monospace;
-}
-
-.event-text {
-  color: #334155;
-}
-
-.empty {
-  color: #64748b;
-  padding: 12px 0;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 </style>
