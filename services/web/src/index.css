@@ -21,3 +21,4 @@
   .metric-card {
     @apply rounded-xl border border-slate-200 bg-white p-4 text-center shadow-sm transition-all duration-300;
   }
+}
