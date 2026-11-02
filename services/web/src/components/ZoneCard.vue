@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="zone-card card-panel"
-    :class="{ 'scene-active': activeScene }"
-  >
+  <div class="zone-card card-panel" :class="{ 'scene-active': activeScene }">
     <!-- Header -->
     <div class="flex items-start justify-between mb-3">
       <div>
@@ -31,13 +28,13 @@
       <!-- Iluminación -->
       <div class="metric-card light-metric">
         <div class="flex items-center justify-between mb-1">
-          <span class="text-xs font-semibold text-slate-500">Iluminación</span>
+          <span class="text-xs font-semibold text-slate-500">Iluminaci&oacute;n</span>
           <span class="text-xs font-bold text-slate-700">{{ zone.dimmer_level }}%</span>
         </div>
         <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
           <div
             class="h-full bg-amber-400 rounded-full transition-all duration-700 ease-out"
-            :style="{ width: dimmerLevel + '%', boxShadow: dimmerLevel > 0 ? '0 0 12px rgba(251, 191, 36, 0.5)' : 'none' }"
+            :style="{ width: dimmerLevel + '%', boxShadow: dimmerLevel > 0 ? '0 0 12px rgba(251,191,36,0.5)' : 'none' }"
           ></div>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-500 mt-1">
@@ -54,11 +51,7 @@
         <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
           <div
             class="h-full rounded-full transition-all duration-700 ease-out"
-            :style="{
-              width: tempFill + '%',
-              background: tempColor,
-              boxShadow: tempColor ? `0 0 10px ${tempColor}40` : 'none'
-            }"
+            :style="{ width: tempFill + '%', backgroundColor: tempColor, boxShadow: tempColor ? '0 0 10px ' + tempColor + '40' : 'none' }"
           ></div>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-500 mt-1">
@@ -72,21 +65,21 @@
           <span class="text-xs font-semibold text-slate-500">Cortinas</span>
           <span class="text-xs font-bold text-slate-700">{{ zone.curtains_position }}%</span>
         </div>
-        <div class="curtain-track h-10 w-full bg-slate-200 rounded-lg overflow-hidden relative border border-slate-100">
-          <!-- Cortina izquierda (desde izquierda) -->
+        <div class="curtain-track h-10 w-full bg-slate-200 rounded-lg overflow-hidden border border-slate-100">
+          <!-- Cortina izquierda -->
           <div
             class="curtain-panel absolute top-0 bottom-0 left-0 bg-slate-300/70 transition-all duration-1000 ease-out"
             :style="{ width: curtainLeftWidth + '%', boxShadow: 'inset -2px 0 6px rgba(0,0,0,0.25)' }"
           ></div>
-          <!-- Cortina derecha (desde derecha) -->
+          <!-- Cortina derecha -->
           <div
             class="curtain-panel absolute top-0 bottom-0 right-0 bg-slate-300/70 transition-all duration-1000 ease-out"
             :style="{ width: curtainRightWidth + '%', boxShadow: 'inset 2px 0 6px rgba(0,0,0,0.25)' }"
           ></div>
           <!-- Indicador de luz filtrada -->
           <div
-            class="absolute top-0 bottom-0 left-[50%] w-0.5 bg-white/60 pointer-events-none z-10"
-            :style="{ transform: 'translateX(-50%)', opacity: curtainLightOpacity }"
+            class="absolute top-0 bottom-0 left-1/2 w-0.5 bg-white/60 pointer-events-none z-10"
+            :style="{ opacity: curtainLightOpacity }"
           ></div>
         </div>
         <div class="flex items-center justify-between text-xs text-slate-500 mt-1">
@@ -94,7 +87,7 @@
         </div>
       </div>
 
-      <!-- Ocupación -->
+      <!-- Ocupaci&oacute;n -->
       <div class="metric-card occupancy-metric col-span-2">
         <div class="flex items-center gap-2">
           <div
@@ -108,7 +101,7 @@
       </div>
     </div>
 
-    <!-- Escenas rápidas (mobile-first, scroll horizontal) -->
+    <!-- Escenas r&p;pidas -->
     <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
       <button
         v-for="s in quickScenes"
@@ -187,9 +180,9 @@ const tempFill = computed(() => {
 });
 const tempColor = computed(() => {
   const t = props.zone.thermostat_temp || 20;
-  if (t < 21) return '#3b82f6'; // azul frío
-  if (t <= 27) return '#f59e0b'; // naranja óptimo/medio
-  return '#ef4444'; // rojo caliente
+  if (t < 21) return '#3b82f6';
+  if (t <= 27) return '#f59e0b';
+  return '#ef4444';
 });
 const tempTextColor = computed(() => {
   const t = props.zone.thermostat_temp || 20;
@@ -210,25 +203,17 @@ const sceneIcon = (s) => sceneIcons[s] || '•';
 const sceneShortLabel = (s) => sceneShort[s] || s;
 
 const goDetail = () => {
-  router.push(`/zones/${props.zone.zone_id}`);
-});
+  router.push('/zones/' + props.zone.zone_id);
+};
 
-// GSAP: animación de entrada de cada tarjeta
 onMounted(() => {
   gsap.fromTo('.zone-card', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' });
 });
 
-// GSAP: pulso cuando cambia la escena
 watch(
   () => props.zone.lighting_scene,
   () => {
-    gsap.to('.zone-card', {
-      duration: 0.3,
-      scale: 1.02,
-      yoyo: true,
-      repeat: 1,
-      ease: 'power2.out',
-    });
+    gsap.to('.zone-card', { duration: 0.3, scale: 1.02, yoyo: true, repeat: 1, ease: 'power2.out' });
   }
 );
 
@@ -238,12 +223,9 @@ const sendCommand = async (type, value) => {
 </script>
 
 <style scoped>
-/* Estilos base definidos en src/index.css (@layer components).
-   Aquí solo sobrescrituras específicas de este componente si fuera necesario. */
 .zone-card {
   min-height: 340px;
 }
-
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
