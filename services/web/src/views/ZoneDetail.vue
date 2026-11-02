@@ -1,30 +1,30 @@
 <template>
-  <div class="min-h-screen bg-slate-50 px-4 py-6 sm:px-6 lg:px-8 max-w-3xl mx-auto">
+  <div class="min-h-screen bg-slate-950 px-4 py-6 sm:px-6 lg:px-8 max-w-3xl mx-auto">
     <!-- Header -->
     <div class="flex items-center gap-3 mb-6">
       <button
         @click="router.push('/')"
-        class="p-2 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all"
+        class="p-2 rounded-lg border border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:border-slate-600 transition-all"
         aria-label="Volver"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        <LucideArrowLeft class="w-5 h-5" />
       </button>
       <div>
-        <h1 class="text-2xl font-bold text-slate-900">{{ zone?.name || 'Cargando…' }}</h1>
-        <p class="text-sm text-slate-500">{{ zone?.zone_id }}</p>
+        <h1 class="text-2xl font-bold text-slate-100">{{ zone?.name || 'Cargando…' }}</h1>
+        <p class="text-sm text-slate-400">{{ zone?.zone_id }}</p>
       </div>
     </div>
 
     <div v-if="!zone" class="text-center py-20">
-      <p class="text-slate-500">Cargando zona…</p>
+      <p class="text-slate-400">Cargando zona…</p>
     </div>
 
     <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Iluminación -->
       <div class="card-panel">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="font-semibold text-slate-900 flex items-center gap-2">
-            <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M5.555 6.445L4.455 5.346l-.707.707l1.414 1.414l.707-.707L5.555 6.445z"></path></svg>
+          <h3 class="font-semibold text-slate-100 flex items-center gap-2">
+            <LucideSun class="w-5 h-5 text-amber-400" />
             Iluminación
           </h3>
           <span class="text-xs font-bold" :class="tempTextColor">{{ roundTemp(zone.dimmer_level) }}%</span>
@@ -32,20 +32,20 @@
 
         <div class="space-y-4">
           <div>
-            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Escena</label>
+            <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Escena</label>
             <select
               v-model="selectedScene"
               @change="applyScene"
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm focus:ring-2 focus:ring-smartroom-500 focus:border-smartroom-500 outline-none transition-all"
+              class="w-full px-3 py-2 rounded-lg border border-slate-700 bg-slate-900 text-sm focus:ring-2 focus:ring-smartroom-500 focus:border-smartroom-500 outline-none transition-all"
             >
               <option v-for="s in sceneOptions" :key="s" :value="s">{{ sceneLabel(s) }}</option>
             </select>
           </div>
 
           <div>
-            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider flex justify-between">
+            <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex justify-between">
               <span>Atenuación</span>
-              <span class="text-sm font-bold text-slate-700">{{ zone.dimmer_level }}%</span>
+              <span class="text-sm font-bold text-slate-100">{{ zone.dimmer_level }}%</span>
             </label>
             <input
               type="range"
@@ -54,14 +54,14 @@
               step="1"
               :value="zone.dimmer_level"
               @input="onDimmerInput"
-              class="w-full accent-amber-500 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+              class="w-full accent-amber-500 h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer"
             />
-            <div class="light-preview h-16 rounded-lg border border-slate-100 bg-white flex items-center justify-center relative overflow-hidden mt-2">
+            <div class="light-preview h-16 rounded-lg border border-slate-800 bg-slate-900 flex items-center justify-center relative overflow-hidden mt-2">
               <div
-                class="absolute inset-0 bg-amber-400/20 rounded-lg blur-xl"
+                class="absolute inset-0 bg-amber-500/20 rounded-lg blur-xl"
                 :style="{ opacity: glowOpacity, transition: 'opacity 0.5s ease' }"
               ></div>
-              <div class="relative z-10 text-slate-500 text-xs">{{ zone.dimmer_level === 0 ? 'Apagado' : zone.dimmer_level + '% brillo' }}</div>
+              <div class="relative z-10 text-slate-400 text-xs">{{ zone.dimmer_level === 0 ? 'Apagado' : zone.dimmer_level + '% brillo' }}</div>
             </div>
           </div>
         </div>
@@ -70,8 +70,8 @@
       <!-- Clima -->
       <div class="card-panel">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="font-semibold text-slate-900 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26 3.674 1.26 4.934 0l5-5A2 2 0 0022 9.172V5.636a2 2 0 00-.586-1.414l-5-5A2 2 0 0017.172 1H13v4a2 2 0 00-1.414.586l-2.5 2.5A2 2 0 018 9.172V5.172z"></path></svg>
+          <h3 class="font-semibold text-slate-100 flex items-center gap-2">
+            <LucideThermometer class="w-5 h-5" />
             Clima
           </h3>
           <span class="text-xs font-bold" :class="tempTextColor">{{ roundTemp(zone.thermostat_temp) }}°C</span>
@@ -79,14 +79,14 @@
 
         <div class="space-y-4">
           <div>
-            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider flex justify-between">
+            <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex justify-between">
               <span>Modo HVAC</span>
-              <span class="text-sm font-bold text-slate-700 capitalize">{{ zone.hvac_mode }}</span>
+              <span class="text-sm font-bold text-slate-100 capitalize">{{ zone.hvac_mode }}</span>
             </label>
             <select
               v-model="zone.hvac_mode"
               @change="sendCommand('set_hvac_mode', zone.hvac_mode)"
-              class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm focus:ring-2 focus:ring-smartroom-500 focus:border-smartroom-500 outline-none transition-all"
+              class="w-full px-3 py-2 rounded-lg border border-slate-700 bg-slate-900 text-sm focus:ring-2 focus:ring-smartroom-500 focus:border-smartroom-500 outline-none transition-all"
             >
               <option value="auto">Auto</option>
               <option value="cool">Frío</option>
@@ -96,9 +96,9 @@
           </div>
 
           <div>
-            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider flex justify-between">
+            <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex justify-between">
               <span>Setpoint</span>
-              <span class="text-sm font-bold text-slate-700">{{ roundTemp(zone.thermostat_setpoint) }}°C</span>
+              <span class="text-sm font-bold text-slate-100">{{ roundTemp(zone.thermostat_setpoint) }}°C</span>
             </label>
             <input
               type="range"
@@ -107,17 +107,22 @@
               step="0.5"
               :value="zone.thermostat_setpoint"
               @input="onSetpointInput"
-              class="w-full accent-red-500 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+              class="w-full accent-red-500 h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer"
             />
             <div class="temp-preview mt-2">
-              <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
+              <div class="h-3 w-full bg-slate-800 rounded-full overflow-hidden relative">
+                <!-- Temperatura actual -->
                 <div
-                  class="h-full rounded-full"
-                  :style="{ width: tempSetpointFill + '%', background: tempSetpointColor, boxShadow: '0 0 10px ' + tempSetpointColor + '40' }"
-                  :class="tempSetpointColor.includes('blue') ? 'temp-bar-cold' : tempSetpointColor.includes('amber') ? 'temp-bar-warm' : 'temp-bar-hot'"
+                  class="h-full rounded-full transition-all duration-700 ease-out"
+                  :style="{ width: tempFill + '%', background: tempColor, boxShadow: tempColor ? '0 0 10px ' + tempColor + '60' : 'none' }"
+                ></div>
+                <!-- Marcador de setpoint -->
+                <div
+                  class="absolute top-[-2px] bottom-[-2px] w-1 bg-white rounded-full"
+                  :style="{ left: tempSetpointFill + '%', boxShadow: '0 0 6px white' }"
                 ></div>
               </div>
-              <div class="flex justify-between text-xs text-slate-500 mt-1">
+              <div class="flex justify-between text-xs text-slate-400 mt-1">
                 <span>16°C</span>
                 <span class="font-semibold">{{ roundTemp(zone.thermostat_temp) }}°C actual</span>
                 <span>30°C</span>
@@ -130,18 +135,18 @@
       <!-- Cortinas -->
       <div class="card-panel lg:col-span-2">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="font-semibold text-slate-900 flex items-center gap-2">
-            <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+          <h3 class="font-semibold text-slate-100 flex items-center gap-2">
+            <LucideBlinds class="w-5 h-5 text-purple-400" />
             Cortinas
           </h3>
-          <span class="text-xs font-bold text-slate-700">{{ zone.curtains_position }}%</span>
+          <span class="text-xs font-bold text-slate-100">{{ zone.curtains_position }}%</span>
         </div>
 
         <div class="space-y-4">
           <div>
-            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider flex justify-between">
+            <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex justify-between">
               <span>Posición</span>
-              <span class="text-sm font-bold text-slate-700">{{ zone.curtains_position }}%</span>
+              <span class="text-sm font-bold text-slate-100">{{ zone.curtains_position }}%</span>
             </label>
             <input
               type="range"
@@ -150,27 +155,27 @@
               step="1"
               :value="zone.curtains_position"
               @input="onCurtainsInput"
-              class="w-full accent-purple-500 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+              class="w-full accent-purple-500 h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer"
             />
-            <div class="curtain-preview h-32 rounded-lg border border-slate-100 bg-white relative overflow-hidden flex items-center justify-center mt-2">
+            <div class="curtain-preview h-32 rounded-lg border border-slate-800 bg-slate-900 relative overflow-hidden flex items-center justify-center mt-2">
               <!-- Fondo ventana -->
-              <div class="absolute inset-0 bg-blue-50/30"></div>
+              <div class="absolute inset-0 bg-blue-900/20"></div>
               <!-- Cortina izquierda -->
               <div
-                class="curtain-panel absolute top-0 bottom-0 left-0 bg-slate-200/80 transition-all duration-1000 ease-out border-r border-slate-300/50"
-                :style="{ width: curtainLeftWidth + '%', boxShadow: 'inset -1px 0 6px rgba(0,0,0,0.15)' }"
+                class="curtain-panel absolute top-0 bottom-0 left-0 bg-slate-700/80 transition-all duration-1000 ease-out border-r border-slate-600/50"
+                :style="{ width: curtainLeftWidth + '%', boxShadow: 'inset -1px 0 6px rgba(0,0,0,0.3)' }"
               ></div>
               <!-- Cortina derecha -->
               <div
-                class="curtain-panel absolute top-0 bottom-0 right-0 bg-slate-200/80 transition-all duration-1000 ease-out border-l border-slate-300/50"
-                :style="{ width: curtainRightWidth + '%', boxShadow: 'inset 1px 0 6px rgba(0,0,0,0.15)' }"
+                class="curtain-panel absolute top-0 bottom-0 right-0 bg-slate-700/80 transition-all duration-1000 ease-out border-l border-slate-600/50"
+                :style="{ width: curtainRightWidth + '%', boxShadow: 'inset 1px 0 6px rgba(0,0,0,0.3)' }"
               ></div>
               <!-- Luz filtrada -->
               <div
-                class="absolute top-0 bottom-0 left-1/2 w-1 bg-white/50 pointer-events-none z-10"
+                class="absolute top-0 bottom-0 left-1/2 w-1 bg-white/30 pointer-events-none z-10"
                 :style="{ transform: 'translateX(-50%)', opacity: curtainLightOpacity }"
               ></div>
-              <span class="relative z-10 text-xs font-medium text-slate-600">
+              <span class="relative z-10 text-xs font-medium text-slate-400">
                 {{ zone.curtains_position === 0 ? 'Abiertas' : zone.curtains_position === 100 ? 'Cerradas' : 'Parciales' }}
               </span>
             </div>
@@ -181,20 +186,20 @@
       <!-- Ocupación y eventos -->
       <div class="card-panel lg:col-span-2">
         <div class="flex items-center justify-between mb-4">
-          <h3 class="font-semibold text-slate-900 flex items-center gap-2">
-            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a4 4 0 004 4h5a4 4 0 004-4v6m4-6v-6m-1 5H9m-1 0h.01M9 16h.01"></path></svg>
+          <h3 class="font-semibold text-slate-100 flex items-center gap-2">
+            <LucideCircle class="w-5 h-5 text-green-400" />
             Ocupación
           </h3>
           <span
             class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold"
-            :class="{ 'bg-green-100 text-green-700': zone.occupancy_status, 'bg-slate-100 text-slate-500': !zone.occupancy_status }"
+            :class="{ 'bg-green-900/30 text-green-400': zone.occupancy_status, 'bg-slate-800 text-slate-500': !zone.occupancy_status }"
           >
-            <span class="w-1.5 h-1.5 rounded-full" :class="{ 'bg-green-500': zone.occupancy_status, 'bg-slate-400': !zone.occupancy_status }"></span>
+            <span class="w-1.5 h-1.5 rounded-full" :class="{ 'bg-green-400': zone.occupancy_status, 'bg-slate-500': !zone.occupancy_status }"></span>
             {{ zone.occupancy_status ? 'Ocupada' : 'Vacía' }}
           </span>
         </div>
 
-        <div class="bg-slate-900 rounded-lg p-4 overflow-hidden">
+        <div class="bg-slate-900/50 rounded-lg p-4 overflow-hidden border border-slate-800/50">
           <div class="flex justify-between mb-2">
             <span class="text-xs font-semibold text-slate-300">Eventos recientes</span>
             <span class="text-xs text-slate-500">Últimos 5</span>
@@ -222,6 +227,13 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useZonesStore } from '../stores/zones';
 import { fetchZone } from '../api/api';
+import {
+  LucideArrowLeft,
+  LucideSun,
+  LucideThermometer,
+  LucideBlinds,
+  LucideCircle,
+} from '@lucide/vue';
 import { gsap } from 'gsap';
 
 const route = useRoute();
@@ -253,9 +265,9 @@ const tempSetpointFill = computed(() => {
 });
 const tempSetpointColor = computed(() => {
   const sp = zone.value?.thermostat_setpoint || 20;
-  if (sp < 21) return '#3b82f6'; // azul frío
-  if (sp <= 27) return '#f59e0b'; // naranja óptimo/medio
-  return '#ef4444'; // rojo caliente
+  if (sp < 21) return '#3b82f6';
+  if (sp <= 27) return '#f59e0b';
+  return '#ef4444';
 });
 const curtainLeftWidth = computed(() => {
   const p = zone.value?.curtains_position || 0;
@@ -272,9 +284,9 @@ const curtainLightOpacity = computed(() => {
 
 const tempTextColor = computed(() => {
   const t = zone.value?.thermostat_temp || 20;
-  if (t < 21) return 'text-blue-600';
-  if (t <= 27) return 'text-amber-600';
-  return 'text-red-600';
+  if (t < 21) return 'text-blue-400';
+  if (t <= 27) return 'text-amber-400';
+  return 'text-red-400';
 });
 
 const recentEvents = computed(() => {

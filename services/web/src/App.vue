@@ -1,7 +1,7 @@
 <template>
-  <div class="min-h-screen bg-slate-50 text-slate-900">
+  <div class="min-h-screen bg-slate-950 text-slate-100 antialiased">
     <router-view v-slot="{ Component }">
-      <transition name="fade" mode="out-in" appear-class="appear" appear-active-class="appear-active appear-to">
+      <transition name="fade" mode="out-in">
         <component :is="Component" />
       </transition>
     </router-view>
@@ -20,7 +20,7 @@ onMounted(async () => {
     await store.loadZones();
     store.openWebSocket();
   } catch (e) {
-    // Los errores se manejan en cada vista
+    console.error('Error inicializando:', e);
   }
 });
 </script>
@@ -31,16 +31,6 @@ onMounted(async () => {
 }
 .fade-enter-from, .fade-leave-to {
   opacity: 0;
-  transform: translateY(4px);
-}
-.appear {
-  opacity: 0;
-}
-.appear-active {
-  opacity: 1;
-  transition: opacity 0.4s ease;
-}
-.appear-to {
-  opacity: 1;
+  transform: translateY(6px);
 }
 </style>
