@@ -1,15 +1,26 @@
 <template>
-  <div class="scene-controls">
-    <h3>Escenas rápidas</h3>
-    <div class="buttons">
+  <div class="scene-controls mb-3">
+    <label class="form-label text-secondary small text-uppercase fw-bold">Escena r&aacute;pida</label>
+    <div class="d-inline-block">
       <button
-        v-for="s in scenes"
-        :key="s"
-        :class="{ active: activeScene === s }"
-        @click="applyScene(s)"
+        class="btn btn-outline-secondary dropdown-toggle"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
       >
-        {{ labels[s] }}
+        <span class="me-2">{{ sceneIcon(activeScene || 'welcome') }}</span>
+        {{ sceneLabel(activeScene || 'welcome') }}
       </button>
+      <ul class="dropdown-menu dropdown-menu-dark">
+        <li v-for="s in scenes" :key="s">
+          <button
+            class="dropdown-item"
+            :class="{ active: activeScene === s }"
+            @click="applyScene(s)"
+          >
+            <span class="me-2">{{ sceneIcon(s) }}</span>{{ sceneLabel(s) }}
+          </button>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -30,11 +41,22 @@ const labels = {
   night: 'Noche',
   eco: 'Ahorro',
 };
+const icons = {
+  welcome: '☀️',
+  relax_sunset: '🌅',
+  work: '💡',
+  cinema: '🎬',
+  night: '🌙',
+  eco: '🍃',
+};
 
 const activeScene = computed(() => {
   const z = store.zones.find((z) => z.zone_id === props.zoneId);
   return z ? z.lighting_scene : '';
 });
+
+const sceneIcon = (s) => icons[s] || '•';
+const sceneLabel = (s) => labels[s] || s;
 
 const applyScene = async (s) => {
   await store.sendCommand(props.zoneId, 'set_scene', s);
@@ -42,9 +64,29 @@ const applyScene = async (s) => {
 </script>
 
 <style>
-.scene-controls h3 { font-size: 0.9rem; color: #475569; margin-bottom: 8px; }
-.buttons { display: flex; gap: 6px; flex-wrap: wrap; }
-.buttons button { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 10px; font-size: 0.8rem; cursor: pointer; color: #334155; }
-.buttons button:hover { background: #f8fafc; }
-.buttons button.active { background: #dbeafe; border-color: #2563eb; color: #1e40af; font-weight: 600; }
+.scene-controls .dropdown-menu-dark {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+.scene-controls .dropdown-item {
+  color: #cbd5e1;
+  padding: 0.5rem 1rem;
+}
+.scene-controls .dropdown-item:hover {
+  background: #334155;
+  color: #f1f5f9;
+}
+.scene-controls .dropdown-item.active {
+  background: #3b82f6;
+  color: #ffffff;
+}
+.scene-controls .btn-outline-secondary {
+  border-color: #334155;
+  color: #94a3b8;
+  background: #0f172a;
+}
+.scene-controls .btn-outline-secondary:hover {
+  border-color: #475569;
+  color: #f1f5f9;
+}
 </style>

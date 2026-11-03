@@ -1,16 +1,36 @@
 <template>
-  <div class="app">
-    <header class="app-header">
-      <h1>SmartRoom</h1>
-      <div class="status-badge" :class="{ awake: isAwake }">{{ statusText }}</div>
-      <p class="subtitle">Demo con datos simulados · servicios gratuitos pueden tardar ~1 min en despertar</p>
+  <div class="app d-flex flex-column min-vh-100 bg-dark text-light">
+    <header class="app-header bg-dark border-bottom border-secondary">
+      <div class="container-xxl px-4 py-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <h1 class="h4 mb-0 text-white">SmartRoom</h1>
+          <div class="d-flex align-items-center gap-3">
+            <span
+              class="badge bg-success"
+              :class="{ 'bg-success': isAwake, 'bg-secondary': !isAwake }"
+            >
+              {{ isAwake ? 'Servicios listos' : 'Despertando…' }}
+            </span>
+          </div>
+        </div>
+      </div>
     </header>
 
-    <router-view v-slot="{ Component }">
-      <transition name="fade" mode="out-in">
-        <component :is="Component" />
-      </transition>
-    </router-view>
+    <main class="flex-fill container-xxl py-4 px-4">
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
+    </main>
+
+    <footer class="bg-dark border-top border-secondary py-3 text-center">
+      <div class="container-xxl px-4">
+        <p class="mb-0 text-secondary small">
+          Demo con datos simulados · servicios gratuitos pueden tardar ~1 min en despertar
+        </p>
+      </div>
+    </footer>
   </div>
 </template>
 
@@ -20,30 +40,28 @@ import { useZonesStore } from './stores/zones';
 
 const store = useZonesStore();
 const isAwake = ref(false);
-const statusText = ref('Despertando servicios…');
 
 onMounted(async () => {
   try {
     await store.fetchHealth();
     isAwake.value = true;
-    statusText.value = 'Servicios listos';
     await store.loadZones();
     store.openWebSocket();
   } catch (e) {
-    statusText.value = 'Servicios no disponibles (intenta de nuevo en ~1 min)';
+    // Error silencioso, la UI mostrará el estado por defecto
   }
 });
 </script>
 
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: system-ui, -apple-system, sans-serif; background: #f5f7fa; color: #111; line-height: 1.5; }
-.app { max-width: 1000px; margin: 0 auto; padding: 24px; }
-.app-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #ddd; }
-.app-header h1 { font-size: 1.5rem; letter-spacing: -0.5px; }
-.status-badge { font-size: 0.85rem; padding: 4px 10px; border-radius: 20px; background: #e2e8f0; color: #475569; }
-.status-badge.awake { background: #dcfce7; color: #166534; }
-.subtitle { font-size: 0.85rem; color: #64748b; margin-top: 4px; }
-.fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
-.fade-enter-from, .fade-leave-to { opacity: 0; }
+.app-header {
+  background: #0a0a0a;
+  border-bottom-color: #334155 !important;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
 </style>

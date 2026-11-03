@@ -1,0 +1,13 @@
+// Importar todo el CSS de Bootstrap 6 con tokens personalizados para modo oscuro
+@use "bootstrap/scss/bootstrap" with (
+  $root-tokens: (
+    --bs-body-bg: #0a0a0a,
+    --bs-body-color: #f1f5f9,
+    --bs-border-color: #334155,
+    --bs-border-color-subtle: #1e293b,
+    --bs-card-bg: #1e293b,
+    --bs-card-border-color: #334155,
+    --bs-link-color: #3b82f6,
+    --bs-link-hover-color: #60a5fa,
+  )
+);

@@ -1,6 +1,7 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { createRouter, createWebHistory } from 'vue-router';
+import './js/bootstrap';
 import App from './App.vue';
 import ZonesList from './views/ZonesList.vue';
 import ZoneDetail from './views/ZoneDetail.vue';

@@ -10,13 +10,17 @@
     "test": "echo \"no tests yet\" && exit 0"
   },
   "dependencies": {
+    "@floating-ui/dom": "^1.8.0",
     "axios": "^1.x",
+    "bootstrap": "^6.0.0-alpha.1",
     "pinia": "^2.x",
+    "vanilla-calendar-pro": "^3.4.0",
     "vue": "^3.x",
     "vue-router": "^4.x"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.x",
+    "sass": "^1.107.1",
     "vite": "^5.x"
   }
 }

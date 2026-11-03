@@ -30,3 +30,7 @@ npm-debug.log*
 
 #IA
 .opencode/
+.hermes/
+.agents/
+skills-lock.json
+skills/
