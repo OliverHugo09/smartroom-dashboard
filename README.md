@@ -127,13 +127,14 @@ npm run dev   # http://localhost:5173
 ## 📸 Evidencias visuales
 
 **API REST de Node-RED respondiendo** (`/api/health`, `/api/zones`, `POST /commands`)
+
    ![Endpoints de Node-RED](./screenshots/04-api.png)
    ![Broker Mosquitto](./screenshots/02-mosquitto.png)
 
 **Dashboard Vue 3 con 4 zonas en tiempo real**
+
    ![Dashboard en tiempo real](./screenshots/05-dashboard.png)
 
 **Cambio de escena desde la UI en tiempo real**
-   ![Cambio de escena](./screenshots/06-cambio-escena.png)
 
----
+   ![Cambio de escena](./screenshots/06-cambio-escena.png)
