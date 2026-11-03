@@ -15,15 +15,16 @@ Simulación de control de habitaciones de hotel: dispositivos → MQTT → Node-
 - Si hay retraso, recorta según el "Orden de recorte" del roadmap; el flujo comando → dispositivo → estado → pantalla nunca se recorta.
 
 ## Estado actual del repo
-- **F0 pendiente (setup).** No hay código aún: solo `docs/` y `AGENTS.md`. Aún no es un repositorio Git.
-- Primera entrega de F0: crear repo, estructura de carpetas, `docker-compose.yml` con Mosquitto, `.env.*.example`, `.gitignore`, `.gitattributes`, Issues F0–F5, CI mínimo.
+- **F0, F1, F2, F3 completados.** Fase en curso: **F4 pendiente** (despliegue en nube, en espera por decisión del usuario).
+- Repositorio Git activo en `main`, remoto `origin` apuntando a GitHub (`OliverHugo09/smartroom-dashboard`).
+- No es necesario crear Issues nuevos; los existentes están vinculados a los commits (`Closes #n`).
 
 ## Stack y puntos de entrada
-- Dispositivos simulados: `services/simulator/` (Node.js, cliente MQTT).
+- Dispositivos simulados: `services/simulator/` (Node.js, cliente MQTT único, 25 pruebas unitarias).
 - Broker local: Mosquitto (Docker Compose, puerto 1883, auth usuario/clave).
-- Orquestación y API: `services/nodered/` (Node-RED; `Dockerfile`, `settings.js`, `flows.json`, `start.js`).
-- Frontend: `services/web/` (Vue 3 + Vite + Vue Router + Pinia + Axios).
-- Nube: Node-RED + simulador en Render (Docker), broker HiveMQ Cloud, frontend en Vercel.
+- Orquestación y API: `services/nodered/` (Node.js, `start.js`, `settings.js`, `flows.json`, `api-server.js`, Dockerfile).
+- Frontend: `services/web/` (Vue 3 + Vite + Vue Router + Pinia + Axios, build con Vite).
+- Nube: Planeada (Render + HiveMQ + Vercel) pero **no desplegada aún**; verificar en local primero.
 - Sin base de datos: el estado vive en mensajes MQTT *retained* y en memoria de Node-RED.
 
 ## Contratos clave (ver `docs/01-arquitectura.md` para el detalle completo)
@@ -44,6 +45,8 @@ Simulación de control de habitaciones de hotel: dispositivos → MQTT → Node-
 
 ## Comandos y verificación
 - Levantar broker local: `docker compose up mosquitto`; probar con `mosquitto_pub` / `mosquitto_sub` desde el contenedor (anónimo debe ser rechazado).
+- Levantar todo el stack local: `docker compose up mosquitto simulator nodered`.
+- Levantar frontend: `cd services/web && npm install && npm run dev` (puerto 5173).
 - Pruebas por servicio: `npm test` (o el script indicado en cada `services/*`). Orden sugerido: lint → typecheck → test.
 - Cada servicio con endpoint de salud (`GET /health`), README breve y pruebas mínimas.
 - Al cerrar sesión: recordar actualizar `docs/ESTADO.md`.
